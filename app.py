@@ -35,16 +35,24 @@ def get_appointments():
     xml = """
        <AppointmentList>
          <Appointment>
-           <date>Wednesday 1st October 2014 (Morning)</date>
+           <Date>2014-10-01</Date>
+           <Time>AM</Time>
+           <Title>01-Oct-2014 (AM)</Title>
          </Appointment>
          <Appointment>
-           <date>Wednesday 1st October 2014 (Afternoon)</date>
+           <Date>2014-10-01</Date>
+           <Time>PM</Time>
+           <Title>01-Oct-2014 (PM)</Title>
          </Appointment>
          <Appointment>
-           <date>Wednesday 8th October 2014 (Morning)</date>
+           <Date>2014-10-08</Date>
+           <Time>AM</Time>
+           <Title>08-Oct-2014 (AM)</Title>
          </Appointment>
          <Appointment>
-           <date>Wednesday 8th October 2014 (Afternoon)</date>
+           <Date>2014-10-08</Date>
+           <Time>PM</Time>
+           <Title>08-Oct-2014 (PM)</Title>
          </Appointment>
        </AppointmentList>
     """
