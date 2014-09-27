@@ -16,7 +16,6 @@ def get_connection():
     )
 
     return conn
-    
 
 app = Flask(__name__)
 
