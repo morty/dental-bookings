@@ -23,13 +23,14 @@ app = Flask(__name__)
 def hello():
     message = request.args.get('message', 'No message')
     conn = get_connection()
-
-    conn = get_connection()
     cur = conn.cursor()
-    cur.execute('INSERT INTO messages (message) VALUES (%s)', message)
+    cur.execute('INSERT INTO messages (message) VALUES (%s)', (message,))
 
     cur.execute('SELECT message FROM messages')
     messages = [x[0] for x in cur.fetchall()]
+    conn.commit()
+    cur.close()
+    conn.close()
     return "<br>".join(messages)
 
 if __name__ == "__main__":
