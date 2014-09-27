@@ -10,7 +10,8 @@ create table patients (
 	last_name varchar (255),
 	nhs_number varchar (20),
 	date_of_birth date,
-	tel_no varchar (20)
+	tel_no varchar (20),
+	urgency varchar(20)
 );
 
 create table referrals (
