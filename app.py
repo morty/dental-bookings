@@ -1,7 +1,7 @@
 import os
 import psycopg2
 import urlparse
-from flask import Flask, request
+from flask import Flask, Response, request
 
 def get_connection():
     urlparse.uses_netloc.append("postgres")
@@ -29,6 +29,26 @@ def hello():
             cur.execute('SELECT message FROM messages')
             messages = [x[0] for x in cur.fetchall()]
             return "<br>".join(messages)
+
+@app.route("/appointments")
+def get_appointments():
+    xml = """
+       <AppointmentList>
+         <Appointment>
+           <date>Wednesday 1st October 2014 (Morning)</date>
+         </Appointment>
+         <Appointment>
+           <date>Wednesday 1st October 2014 (Afternoon)</date>
+         </Appointment>
+         <Appointment>
+           <date>Wednesday 8th October 2014 (Morning)</date>
+         </Appointment>
+         <Appointment>
+           <date>Wednesday 8th October 2014 (Afternoon)</date>
+         </Appointment>
+       </AppointmentList>
+    """
+    return Response(xml, mimetype='text/xml')
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
