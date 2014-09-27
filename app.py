@@ -22,16 +22,13 @@ app = Flask(__name__)
 @app.route("/")
 def hello():
     message = request.args.get('message', 'No message')
-    conn = get_connection()
-    cur = conn.cursor()
-    cur.execute('INSERT INTO messages (message) VALUES (%s)', (message,))
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute('INSERT INTO messages (message) VALUES (%s)', (message,))
 
-    cur.execute('SELECT message FROM messages')
-    messages = [x[0] for x in cur.fetchall()]
-    conn.commit()
-    cur.close()
-    conn.close()
-    return "<br>".join(messages)
+            cur.execute('SELECT message FROM messages')
+            messages = [x[0] for x in cur.fetchall()]
+            return "<br>".join(messages)
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
