@@ -1,6 +1,7 @@
 import os
 import psycopg2
 import urlparse
+import lxml.etree
 from flask import Flask, Response, request
 
 def get_connection():
@@ -29,6 +30,28 @@ def hello():
             cur.execute('SELECT message FROM messages')
             messages = [x[0] for x in cur.fetchall()]
             return "<br>".join(messages)
+
+@app.route('/book', methods=['POST'])
+def book_appointment():
+    doc = lxml.etree.fromstring(request.stream.read())
+    first_name = doc.xpath('/data/Patient/FirstName/text()')[0]
+    last_name = doc.xpath('/data/Patient/LastName/text()')[0]
+    nhs_number = doc.xpath('/data/Patient/NHSNumber/text()')[0]
+    date_of_birth = doc.xpath('/data/Patient/Dob/text()')[0]
+    tel_no = doc.xpath('/data/Patient/ContactTel/text()')[0]
+    urgency = doc.xpath('/data/Patient/Urgency/text()')[0]
+
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            query = """
+              INSERT INTO patients
+              (first_name, last_name, nhs_number, date_of_birth, tel_no, urgency)
+              VALUES
+              (%s, %s, %s, %s, %s, %s)
+            """
+            values = (first_name, last_name, nhs_number, date_of_birth, tel_no, urgency)
+            cur.execute(query, values)
+    return "OK"
 
 @app.route("/appointments")
 def get_appointments():
