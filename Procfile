@@ -1,1 +1,1 @@
-web: python dental-bookings/app.py
+web: python app.py
