@@ -25,11 +25,9 @@ def hello():
     message = request.args.get('message', 'No message')
     with get_connection() as conn:
         with conn.cursor() as cur:
-            cur.execute('INSERT INTO messages (message) VALUES (%s)', (message,))
-
-            cur.execute('SELECT message FROM messages')
-            messages = [x[0] for x in cur.fetchall()]
-            return "<br>".join(messages)
+            cur.execute("SELECT first_name, last_name, nhs_number, to_char(date_of_birth, 'DD-Mon-YYYY'), tel_no, urgency FROM patients")
+            patients = [", ".join(x) for x in cur.fetchall()]
+            return "<br>".join(patients)
 
 @app.route('/book', methods=['POST'])
 def book_appointment():
