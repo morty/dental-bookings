@@ -8,8 +8,8 @@
         <ContactTel>0130285677</ContactTel>
     </Patient>
     <Dentist>
-        <Dentist>Mr.Eve</Dentist>
-        <DentistName>01302864330</DentistName>
+        <DentistName>Mr.Eve</DentistName>
+        <ContactNumber>01302864330</ContactNumber>
     </Dentist>
     <ReferralDetails>
         <Allergies>penicillin</Allergies>
