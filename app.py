@@ -29,7 +29,8 @@ def hello():
     cur.execute('INSERT INTO messages (message) VALUES (%s)', message)
 
     cur.execute('SELECT message FROM messages')
-    return "<br>".join(cur.fetchall())
+    messages = [x[0] for x in cur.fetchall()]
+    return "<br>".join(messages)
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
