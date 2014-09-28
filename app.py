@@ -70,15 +70,19 @@ th {
                 html += "<th>" + "Treatment required" + "</th>"
                 html += "<th>" + "Parents aware?" + "</th>"
                 html += "<th>" + "Problem teeth" + "</th>"
+                html += "<th>" + "Additional details" + "</th>"
                 html += "</tr>"
                 for row in rows:
+                    pdf_loc = 'http://www.fhirforms.com/XFormsPDFDocumentStore?formInstanceId=' + row[0] 
                     html += "<tr>"
                     for i in range(0, 15):
                         if i == 0:
                             html += "<td style=\"display: none\">" + row[i] + "</td>"
                         else:
                             html += "<td>" + row[i] + "</td>"
+                    html += '<td><a href=' + pdf_loc + '>Download</a></td>'
                     html += "</tr>"
+                
                 html += "</table>"
                 html += "</body></html>"
                 return Response(html, mimetype='text/html')
