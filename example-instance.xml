@@ -1,10 +1,10 @@
-<data patient="Patient/0e2d8155-c923-407c-bb89-83e616cc291f" observation-date="2014-09-27T12:20:02Z" practitioner="Practitioner/odlingsm">
+<data patient="Patient/0e2d8155-c923-407c-bb89-83e616cc291f" observation-date="2014-09-27T12:20:02Z" practitioner="Practitioner/odlingsm" instance-id="1243hjkm21gh2">
     <Patient>
         <FirstName>test</FirstName>
         <Urgency displayName="Urgent">urgent</Urgency>
         <LastName>patient</LastName>
         <NHSNumber>3124567899</NHSNumber>
-        <Dob>2001-04-11</Dob>
+        <Dob>1960-Apr-20</Dob>
         <ContactTel>0130285677</ContactTel>
     </Patient>
     <Dentist>
@@ -12,23 +12,15 @@
         <ContactNumber>01302864330</ContactNumber>
     </Dentist>
     <ReferralDetails>
-        <Allergies>penicillin</Allergies>
+        <Allergies>sjahdjkhasd</Allergies>
         <MedicalHistory>none</MedicalHistory>
         <BleedingDisorders>true</BleedingDisorders>
         <Medications>none</Medications>
         <TreatmentRequested>wewr</TreatmentRequested>
         <ParentsAware>true</ParentsAware>
-        <ProblemTeeth>
-            <Quadrant displayName="Upper Right">upper-right</Quadrant>
-            <Tooth displayName="A">a</Tooth>
-        </ProblemTeeth>
-        <ProblemTeeth>
-            <Quadrant displayName="Upper Left">upper-left</Quadrant>
-            <Tooth displayName="E">e</Tooth>
-        </ProblemTeeth>
+         <ProblemTeeth> <UpperLeft>c b</UpperLeft> <UpperRight/> <LowerLeft>d</LowerLeft> <LowerRight>a</LowerRight> </ProblemTeeth>
     </ReferralDetails>
     <Appointment>
-        <ApptDate>2014-09-17</ApptDate>
-        <Clinic displayName="AM">am</Clinic>
+        <ApptDate>2014-10-17 (AM)</ApptDate>
     </Appointment>
 </data>

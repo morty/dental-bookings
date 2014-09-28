@@ -16,13 +16,14 @@ create table patients (
 
 create table referrals (
 	id serial not null primary key,
+	uuid varchar(100) not null,
 	patient_id integer not null,
 	allergies text,
 	medical_history text,
 	bleeding_disorders text,
 	medications text,
 	treatment_requested text, 	/*  List of teeth, coded as UL, UR, LL, LR followed by A-E */
-	parents_aware_flag boolean,
+	parents_aware_flag varchar(100),
 	problem_teeth varchar (255),
 	referral_date date not null
 );
@@ -31,7 +32,7 @@ create table appointments (
 	id serial not null primary key,
 	patient_id integer not null,
 	appointment_date date,
-	time_of_day char (2)	/*  am or pm */
+	time_of_day char (4)	/*  am or pm */
 );
 
 create table char_codes (

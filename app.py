@@ -28,11 +28,60 @@ def hello():
         with get_connection() as conn:
             with conn.cursor() as cur:
                 cur.execute("""SELECT 
-                                first_name, last_name, nhs_number, to_char(date_of_birth, 'DD-Mon-YYYY'), tel_no, urgency 
-                                patient_id, allergies, medical_history, bleeding_disorders, medications, treatment_requested, parents_aware_flag, problem_teeth
-                            FROM patients p left outer join referrals r on r.patient_id = p.id""")
-                patients = [", ".join(filter (None, x)) for x in cur.fetchall()]
-                return "<br>".join(patients)
+                                uuid, to_char(appointment_date, 'DD-Mon-YYYY'), time_of_day, first_name, last_name, nhs_number, to_char(date_of_birth, 'DD-Mon-YYYY'), tel_no, urgency 
+                                allergies, medical_history, bleeding_disorders, medications, treatment_requested, parents_aware_flag, problem_teeth
+                            FROM patients p 
+                            left outer join referrals r on r.patient_id = p.id
+                            left outer join appointments a on a.patient_id = p.id
+                    """)
+                #patients = [", ".join(filter (None, x)) for x in cur.fetchall()]
+                #return "<br>".join(patients)
+                rows = cur.fetchall()
+                html = """
+<html>
+<head>
+<style>
+html, *, body {
+    font-size: 14px;
+    font-family: Arial;
+}
+
+th {
+    text-align: left;
+    vertical-align: top;
+}
+</style>
+</head>
+<body>
+<table>
+"""
+                html += "<tr>"
+                html += "<th style=\"display: none\">" + "uuid" + "</th>"
+                html += "<th colspan=\"2\">" + "Appointment time" + "</th>"
+                html += "<th>" + "First Name" + "</th>"
+                html += "<th>" + "Last Name" + "</th>"
+                html += "<th>" + "NHS no." + "</th>"
+                html += "<th>" + "DOB" + "</th>"
+                html += "<th>" + "tel_no" + "</th>"
+                html += "<th>" + "Allergies" + "</th>"
+                html += "<th>" + "Medical history" + "</th>"
+                html += "<th>" + "Bleeding disorders?" + "</th>"
+                html += "<th>" + "Medications" + "</th>"
+                html += "<th>" + "Treatment required" + "</th>"
+                html += "<th>" + "Parents aware?" + "</th>"
+                html += "<th>" + "Problem teeth" + "</th>"
+                html += "</tr>"
+                for row in rows:
+                    html += "<tr>"
+                    for i in range(0, 15):
+                        if i == 0:
+                            html += "<td style=\"display: none\">" + row[i] + "</td>"
+                        else:
+                            html += "<td>" + row[i] + "</td>"
+                    html += "</tr>"
+                html += "</table>"
+                html += "</body></html>"
+                return Response(html, mimetype='text/html')
     except Exception, err:
         print "Error reading DB"
         print traceback.format_exc()
@@ -41,23 +90,42 @@ def hello():
 def book_appointment():
     try:
         doc = lxml.etree.fromstring(request.stream.read())
-        first_name      = doc.xpath('/data/Patient/FirstName/text()')[0]
-        last_name       = doc.xpath('/data/Patient/LastName/text()')[0]
-        nhs_number      = doc.xpath('/data/Patient/NHSNumber/text()')[0]
-        date_of_birth   = doc.xpath('/data/Patient/Dob/text()')[0]
-        tel_no          = doc.xpath('/data/Patient/ContactTel/text()')[0]
-        urgency         = doc.xpath('/data/Patient/Urgency/text()')[0]
 
-        allergies           = doc.xpath('/data/ReferralDetails/Allergies/text()')[0]
-        medical_history     = doc.xpath('/data/ReferralDetails/MedicalHistory/text()')[0]
-        bleeding_disorders  = doc.xpath('/data/ReferralDetails/BleedingDisorders/text()')[0]
-        medications         = doc.xpath('/data/ReferralDetails/Medications/text()')[0]
-        treatment_requested = doc.xpath('/data/ReferralDetails/TreatmentRequested/text()')[0]
-        parents_aware_flag  = doc.xpath('/data/ReferralDetails/ParentsAware/text()')[0]
-        problem_teeth       = doc.xpath('/data/ReferralDetails/ProblemTeeth/text()')[0] 
+        uuid            = xfirst(doc.xpath('/data/@instance-id'))
 
-        appointment_date    = doc.xpath('/data/Appointment/ApptDate/text()')[0] 
-        time_of_day         = doc.xpath('/data/Appointment/Clinic/text()')[0] 
+        first_name      = xfirst(doc.xpath('/data/Patient/FirstName/text()'))
+        last_name       = xfirst(doc.xpath('/data/Patient/LastName/text()'))
+        nhs_number      = xfirst(doc.xpath('/data/Patient/NHSNumber/text()'))
+        date_of_birth   = xfirst(doc.xpath('/data/Patient/Dob/text()'))
+        tel_no          = xfirst(doc.xpath('/data/Patient/ContactTel/text()'))
+        urgency         = ''
+
+        allergies           = xfirst(doc.xpath('/data/ReferralDetails/Allergies/text()'))
+        medical_history     = xfirst(doc.xpath('/data/ReferralDetails/MedicalHistory/text()'))
+        
+        bleeding_disorders  = xfirst(doc.xpath('/data/ReferralDetails/BleedingDisorders/text()'))
+        medications         = xfirst(doc.xpath('/data/ReferralDetails/Medications/text()'))
+        treatment_requested = xfirst(doc.xpath('/data/ReferralDetails/TreatmentRequested/text()'))
+        parents_aware_flag  = xfirst(doc.xpath('/data/ReferralDetails/ParentsAware/text()'))
+
+        problem_teeth = ''
+        pt_ul               = xfirst(doc.xpath('/data/ReferralDetails/ProblemTeeth/UpperLeft/text()'))
+        pt_ur               = xfirst(doc.xpath('/data/ReferralDetails/ProblemTeeth/UpperRight/text()'))
+        pt_ll               = xfirst(doc.xpath('/data/ReferralDetails/ProblemTeeth/LowerLeft/text()'))
+        pt_lr               = xfirst(doc.xpath('/data/ReferralDetails/ProblemTeeth/LowerRight/text()'))
+
+        if pt_ul != '':
+            problem_teeth = 'Upper-left: ' + pt_ul + "\n"
+        if pt_ur != '':
+            problem_teeth = 'Upper-right: ' + pt_ul + "\n"
+        if pt_ll != '':
+            problem_teeth = 'Lower-left: ' + pt_ll + "\n"
+        if pt_lr != '':
+            problem_teeth = 'Lower-right: ' + pt_lr + "\n"
+
+
+
+        appointment_date, time_of_day    = doc.xpath('/data/Appointment/ApptDate/text()')[0].split()
     except Exception, err:
         print "Error parsing XML"
         print traceback.format_exc()
@@ -86,11 +154,11 @@ def book_appointment():
             with conn.cursor() as cur:
                 query = """
                   INSERT INTO referrals
-                  (patient_id, allergies, medical_history, bleeding_disorders, medications, treatment_requested, parents_aware_flag, problem_teeth, referral_date)
+                  (patient_id, uuid, allergies, medical_history, bleeding_disorders, medications, treatment_requested, parents_aware_flag, problem_teeth, referral_date)
                   VALUES
-                  (%s, %s, %s, %s, %s, %s, %s, %s, now())
+                  (%s, %s, %s, %s, %s, %s, %s, %s, %s, now())
                 """
-                values = (patient_id, allergies, medical_history, bleeding_disorders, medications, treatment_requested, parents_aware_flag, problem_teeth)
+                values = (patient_id, uuid, allergies, medical_history, bleeding_disorders, medications, treatment_requested, parents_aware_flag, problem_teeth)
                 cur.execute(query, values)
     except Exception, err:
         print "Error writing referral"
@@ -114,31 +182,66 @@ def book_appointment():
 
 @app.route("/appointments")
 def get_appointments():
+    #from datetime import *
+    #today = datetime.today()
+    #print today.strftime("%U")
+
+    
+    #weeknum = datetime.date().isocalendar()[1]
+
+    
+
+
+
     xml = """
        <AppointmentList>
          <Appointment>
-           <Date>2014-10-01</Date>
-           <Time>AM</Time>
-           <Title>01-Oct-2014 (AM)</Title>
+           <ApptDate>01-Oct-2014 (AM)</ApptDate>
          </Appointment>
          <Appointment>
-           <Date>2014-10-01</Date>
-           <Time>PM</Time>
-           <Title>01-Oct-2014 (PM)</Title>
+           <ApptDate>01-Oct-2014 (PM)</ApptDate>
          </Appointment>
          <Appointment>
-           <Date>2014-10-08</Date>
-           <Time>AM</Time>
-           <Title>08-Oct-2014 (AM)</Title>
+           <ApptDate>08-Oct-2014 (AM)</ApptDate>
          </Appointment>
          <Appointment>
-           <Date>2014-10-08</Date>
-           <Time>PM</Time>
-           <Title>08-Oct-2014 (PM)</Title>
+           <ApptDate>08-Oct-2014 (PM)</ApptDate>
          </Appointment>
        </AppointmentList>
     """
+
+
+    try:
+        with get_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""SELECT to_char(appointment_date, 'DD-Mon-YYYY') as appointment_date, time_of_day, count(*) 
+                                FROM appointments
+                                WHERE appointment_date >= now()
+                                AND appointment_date <= now() + interval '3 months' 
+                                GROUP BY to_char(appointment_date, 'DD-Mon-YYYY'), time_of_day
+                                HAVING count(*) < 4
+                        """)
+                xml = '<AppointmentList>'
+                #for x in cur.fetchall():
+                #    result += x.appointment_date
+                rows = cur.fetchall()
+                for row in rows:
+                    xml += "<Appointment>\n<ApptDate>" + row[0] + " " + row[1] + "</ApptDate></Appointment>"
+                xml += '</AppointmentList>'
+                    
+    except Exception, err:
+        print "Error reading DB"
+        print traceback.format_exc()
     return Response(xml, mimetype='text/xml')
+
+def xstr(s):
+    print s
+    return '' if s is None else str(s)
+
+def xfirst(s):
+    if s:
+        return s[0] 
+    return ''
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
