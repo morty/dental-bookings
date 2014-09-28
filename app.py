@@ -210,6 +210,7 @@ def get_appointments():
        </AppointmentList>
     """
 
+    return Response(xml, mimetype='text/xml')
 
     try:
         with get_connection() as conn:
