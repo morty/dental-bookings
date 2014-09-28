@@ -73,7 +73,7 @@ th {
                 html += "<th>" + "Additional details" + "</th>"
                 html += "</tr>"
                 for row in rows:
-                    pdf_loc = 'http://www.fhirforms.com/XFormsPDFDocumentStore?formInstanceId=' + row[0] 
+                    pdf_loc = 'http://www.fhirforms.com/XFormsPDF/DocumentStore?formInstanceId=' + row[0] 
                     html += "<tr>"
                     for i in range(0, 15):
                         if i == 0:
