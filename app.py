@@ -4,6 +4,7 @@ import psycopg2
 import urlparse
 import lxml.etree
 from flask import Flask, Response, request
+from datetime import *
 
 def get_connection():
     urlparse.uses_netloc.append("postgres")
@@ -119,13 +120,13 @@ def book_appointment():
         pt_lr               = xfirst(doc.xpath('/data/ReferralDetails/ProblemTeeth/LowerRight/text()'))
 
         if pt_ul != '':
-            problem_teeth = 'Upper-left: ' + pt_ul + "\n"
+            problem_teeth += 'Upper-left: ' + pt_ul + "\n"
         if pt_ur != '':
-            problem_teeth = 'Upper-right: ' + pt_ul + "\n"
+            problem_teeth += 'Upper-right: ' + pt_ur + "\n"
         if pt_ll != '':
-            problem_teeth = 'Lower-left: ' + pt_ll + "\n"
+            problem_teeth += 'Lower-left: ' + pt_ll + "\n"
         if pt_lr != '':
-            problem_teeth = 'Lower-right: ' + pt_lr + "\n"
+            problem_teeth += 'Lower-right: ' + pt_lr + "\n"
 
 
 
@@ -186,13 +187,16 @@ def book_appointment():
 
 @app.route("/appointments")
 def get_appointments():
-    #from datetime import *
-    #today = datetime.today()
-    #print today.strftime("%U")
+    try:
+        today = datetime.today()
+        print today.strftime("%U")
 
     
-    #weeknum = datetime.date().isocalendar()[1]
+        weeknum = datetime.date(today).isocalendar()[1]
 
+    except Exception, err:
+        print "Error processing dates"
+        print traceback.format_exc()
     
 
 
